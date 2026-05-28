@@ -7,25 +7,41 @@ import { validateEnv } from "./config/env.js";
 import { User } from "./models/User.js";
 import { seedDemoJobs } from "./data/seedJobs.js";
 
-const port = process.env.PORT || 5000;
-validateEnv();
+const port = Number(process.env.PORT) || 5000;
 
-console.log("Environment validated. Starting server...");
+const seedDemoData = async () => {
+  const existing = await User.findOne({ email: "recruiter@gethired.ai" });
+  const recruiter =
+    existing ||
+    (await User.create({
+      name: "Default Recruiter",
+      email: "recruiter@gethired.ai",
+      password: "Recruiter@123",
+      role: "recruiter"
+    }));
+  await seedDemoJobs(recruiter._id);
+  console.log("[Seed] Demo recruiter and jobs ready");
+};
 
-connectDB()
-  .then(() => {
-    return User.findOne({ email: "recruiter@gethired.ai" }).then(async (existing) => {
-      const recruiter = existing || (await User.create({
-        name: "Default Recruiter",
-        email: "recruiter@gethired.ai",
-        password: "Recruiter@123",
-        role: "recruiter"
-      }));
-      await seedDemoJobs(recruiter._id);
-      app.listen(port, () => console.log(`Server running on ${port}`));
+const start = async () => {
+  try {
+    validateEnv();
+    console.log("Environment validated. Starting server...");
+
+    await connectDB();
+
+    app.listen(port, "0.0.0.0", () => {
+      console.log(`Server running on port ${port}`);
     });
-  })
-  .catch((e) => {
-    console.error(e);
+
+    seedDemoData().catch((err) => {
+      console.error("[Seed] Failed (API still running):", err.message);
+    });
+  } catch (error) {
+    console.error("Startup failed:", error.message);
+    if (error.stack) console.error(error.stack);
     process.exit(1);
-  });
+  }
+};
+
+start();

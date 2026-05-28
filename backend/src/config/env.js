@@ -1,13 +1,6 @@
 import { AppError } from "../utils/error.js";
 
-const requiredVars = [
-  "JWT_SECRET",
-  "SESSION_SECRET",
-  "CLIENT_URL",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "GOOGLE_CALLBACK_URL"
-];
+const requiredVars = ["JWT_SECRET", "SESSION_SECRET", "CLIENT_URL"];
 
 export const validateEnv = () => {
   const missing = requiredVars.filter((key) => !process.env[key]);
