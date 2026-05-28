@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-[#f8f9ff] text-[#0f172a] antialiased;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.glass {
+  @apply bg-white border border-[#eef1fb] shadow-sm;
+}
+
+.bg-auth-base {
+  background: radial-gradient(1200px 500px at 50% -150px, #fff 0%, #f4f2ff 35%, #ece9ff 100%);
+}
+
+.auth-arc-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.42;
+  background-image:
+    radial-gradient(circle at 0 100%, transparent 48px, #d8d2ff 49px, #d8d2ff 52px, transparent 53px),
+    radial-gradient(circle at 100% 100%, transparent 48px, #d8d2ff 49px, #d8d2ff 52px, transparent 53px);
+  background-size: 130px 70px;
+  background-position: 0 0, 65px 0;
+}
+
+.oauth-btn {
+  @apply w-full h-12 rounded-full border border-[#d8d9e8] text-[#161725] font-medium flex items-center justify-center gap-2 bg-white hover:bg-[#f8f9ff] transition;
+}
+
+.form-label {
+  @apply block text-sm font-semibold text-[#27283c] mb-2;
+}
+
+.input-field {
+  @apply w-full h-12 rounded-xl border border-[#d9dbec] px-3 text-[#161725] placeholder:text-[#a0a3b9] outline-none focus:border-[#6d5ef8] focus:ring-4 focus:ring-[#6d5ef8]/10 transition;
+}
+
+.input-icon-left {
+  @apply pl-10;
+}
+
+.input-icon-right {
+  @apply pr-10;
+}
+
+.field-icon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 text-[#9ba0bd];
+  width: 18px;
+  height: 18px;
+}
+
+.field-action {
+  @apply absolute right-3 top-1/2 -translate-y-1/2 text-[#8c90ac] hover:text-[#5f51dc];
+}
+
+.input-error {
+  @apply mt-1 text-xs text-red-600;
+}
