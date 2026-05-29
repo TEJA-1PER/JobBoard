@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
@@ -41,7 +42,14 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 300 }));
 configurePassport();
 app.use(passport.initialize());
 
-app.get("/api/health", (req, res) => res.json({ success: true, status: "ok" }));
+app.get("/api/health", (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  res.status(dbConnected ? 200 : 503).json({
+    success: dbConnected,
+    status: dbConnected ? "ok" : "starting",
+    db: dbConnected ? "connected" : "connecting"
+  });
+});
 app.use("/api/auth", authRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/ai", aiRoutes);

@@ -28,15 +28,15 @@ const start = async () => {
     validateEnv();
     console.log("Environment validated. Starting server...");
 
-    await connectDB();
-
     app.listen(port, "0.0.0.0", () => {
-      console.log(`Server running on port ${port}`);
+      console.log(`Server listening on port ${port}`);
     });
 
-    seedDemoData().catch((err) => {
-      console.error("[Seed] Failed (API still running):", err.message);
-    });
+    connectDB()
+      .then(() => seedDemoData())
+      .catch((err) => {
+        console.error("[DB] Startup connection failed:", err.message);
+      });
   } catch (error) {
     console.error("Startup failed:", error.message);
     if (error.stack) console.error(error.stack);
