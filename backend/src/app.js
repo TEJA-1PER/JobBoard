@@ -19,9 +19,18 @@ const allowedOrigins =
   process.env.CLIENT_URL?.split(",").map((url) => url.trim()).filter(Boolean) ||
   ["http://localhost:5174", "http://localhost:5175"];
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (/^https:\/\/[\w.-]+\.vercel\.app$/i.test(origin)) return true;
+  return false;
+};
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      callback(null, isAllowedOrigin(origin));
+    },
     credentials: true
   })
 );

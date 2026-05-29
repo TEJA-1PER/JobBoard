@@ -1,8 +1,19 @@
 import axios from "axios";
 
+const normalizeApiBase = (raw) => {
+  if (!raw?.trim()) return null;
+  let url = raw.trim().replace(/\/$/, "");
+  if (url === "https://jobboard-sd2e.onrender.com" || url === "http://jobboard-sd2e.onrender.com") {
+    url = `${url}/api`;
+  } else if (/^https?:\/\//i.test(url) && !url.endsWith("/api")) {
+    url = `${url}/api`;
+  }
+  return url;
+};
+
 /** Production default `/api` is proxied to Render via vercel.json (no CORS). */
 const baseURL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") ||
+  normalizeApiBase(import.meta.env.VITE_API_URL) ||
   (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
 
 export const apiBaseURL = baseURL;
