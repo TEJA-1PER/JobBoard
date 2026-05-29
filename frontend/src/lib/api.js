@@ -33,14 +33,19 @@ const flushRefreshWaiters = (nextToken) => {
   refreshWaiters = [];
 };
 
-const ensureCsrf = async () => {
-  let token = localStorage.getItem("csrfToken");
-  if (!token) {
-    const { data } = await plainApi.get("/auth/csrf-token");
-    token = data?.csrfToken || "";
-    if (token) localStorage.setItem("csrfToken", token);
-  }
+const fetchCsrfToken = async () => {
+  const { data } = await plainApi.get("/auth/csrf-token");
+  const token = data?.csrfToken || "";
+  if (token) localStorage.setItem("csrfToken", token);
   return token;
+};
+
+const ensureCsrf = async (forceRefresh = false) => {
+  if (!forceRefresh) {
+    const cached = localStorage.getItem("csrfToken");
+    if (cached && cached.split(".").length === 3) return cached;
+  }
+  return fetchCsrfToken();
 };
 
 api.interceptors.request.use((config) => {
@@ -68,7 +73,7 @@ api.interceptors.response.use(
     if (isCsrfFailure && originalRequest && !originalRequest._csrfRetry) {
       originalRequest._csrfRetry = true;
       localStorage.removeItem("csrfToken");
-      const nextCsrf = await ensureCsrf();
+      const nextCsrf = await ensureCsrf(true);
       if (nextCsrf) originalRequest.headers["x-csrf-token"] = nextCsrf;
       return api(originalRequest);
     }
