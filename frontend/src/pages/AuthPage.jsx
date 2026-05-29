@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
+import { apiBaseURL } from "../lib/api";
 
 export default function AuthPage({ mode = "login" }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -50,8 +51,11 @@ export default function AuthPage({ mode = "login" }) {
       }
       nav("/dashboard");
     } catch (err) {
-      const message = err.response?.data?.message
-        || (err.request ? "Backend not reachable. Start backend + MongoDB." : "Authentication failed");
+      const message =
+        err.response?.data?.message ||
+        (err.request
+          ? `Cannot reach API (${apiBaseURL}). Check Render is live or wait ~60s on free tier.`
+          : "Authentication failed");
       toast.error(message);
     }
   };
@@ -72,15 +76,14 @@ export default function AuthPage({ mode = "login" }) {
       }
     } catch (err) {
       const message = err.response?.data?.message
-        || (err.request ? "Backend not reachable. Start backend + MongoDB." : "Failed to send reset link");
+        || (err.request ? `Cannot reach API (${apiBaseURL}).` : "Failed to send reset link");
       toast.error(message);
     } finally {
       setIsForgotting(false);
     }
   };
 
-  const apiBase = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/$/, "");
-  const oauthUrl = (provider) => `${apiBase}/auth/${provider}`;
+  const oauthUrl = (provider) => `${apiBaseURL}/auth/${provider}`;
 
   useEffect(() => {
     if (searchParams.get("oauthError")) {

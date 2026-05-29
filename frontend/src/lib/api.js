@@ -1,11 +1,18 @@
 import axios from "axios";
 
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+/** Production default `/api` is proxied to Render via vercel.json (no CORS). */
+const baseURL =
+  import.meta.env.VITE_API_URL?.replace(/\/$/, "") ||
+  (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
+
+export const apiBaseURL = baseURL;
+
 const api = axios.create({
   baseURL,
-  withCredentials: true
+  withCredentials: true,
+  timeout: 90000
 });
-const plainApi = axios.create({ baseURL, withCredentials: true });
+const plainApi = axios.create({ baseURL, withCredentials: true, timeout: 90000 });
 
 let isRefreshing = false;
 let refreshWaiters = [];
